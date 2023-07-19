@@ -3,16 +3,15 @@
 由於多多猫已經失效，因此官方插件也失效  
 
 ## 多多猫伺服器失效，新用戶／新手機無法收藏暫時解決方法
-新用戶／新手機無法連伺服器就無法登入和找插件，就無法收藏  
-可以下載此[已修改apk檔](https://drive.google.com/file/d/17SH2gP-eJz35x7FPAkRlGBNG7KlK7hxx/view?usp=sharing)  
-（非官方，本人修改apk，去除基本登錄限制，可免登錄收藏）  
-到設定打開「手機模式舊版本首頁」
-![Screenshot_20230719_144910_DDCat app](https://github.com/darkness-part-me/ddcat-siteD/assets/47018909/b00f2e5d-9fca-43f7-9e9b-b89e6ce9501b)
-
-舊版本首頁自帶收藏和歷史功能，但仍沒有下載頁面
-![Screenshot_20230719_144923_DDCat app](https://github.com/darkness-part-me/ddcat-siteD/assets/47018909/5e37b11c-b672-483c-8068-d95d0a672cc8)
+新用戶／新手機無法連伺服器就無法登入和進入插件中心，就無法收藏  
+可以下載此[已修改apk檔](https://drive.google.com/file/d/1XS4lucTfp_jyocNgKMlb7KcIgprXi4u1/view?usp=sharing)  
+（非官方共存修改apk，去除部份基本登錄限制，離線進入插件中心。製成共存版只為方便備份和複製漫畫資料(始終現在多多猫伺服器失效,刪了現有的app就什麼資料都沒了)或多多猫作者復活。  
+網絡上下載任何修改版apk請自行承擔風險）  
+離線進入插件中心（但進入前仍會嘗試連入伺服器）  
+![Screenshot_20230720_010941_DDCat app](https://github.com/darkness-part-me/ddcat-siteD/assets/47018909/ff4d8732-3bfa-410c-b0f1-759665adb543)
+可以把收藏、下載等內置插件安裝回來  
+![Screenshot_20230720_013400_DDCat app](https://github.com/darkness-part-me/ddcat-siteD/assets/47018909/40d95b7f-e93c-495f-b8e8-7b6b6fe1b485)
 ![Screenshot_20230719_150400_DDCat app](https://github.com/darkness-part-me/ddcat-siteD/assets/47018909/f81e5418-ce8d-4673-8bd5-e729aea0f391)
-
 使用url載入插件  
 github上的sited文件按「RAW」
 ![image](https://github.com/darkness-part-me/ddcat-siteD/assets/47018909/60a9e68f-c2c0-42a5-b698-ccd348283196)
@@ -58,6 +57,6 @@ github上的sited文件按「RAW」
 
 ## Reference
 [SiteD引擎 github](https://github.com/noear/SiteD)
-[多多猫 - SiteD插件容器](http://ddcat.noear.org/)  
+[(已失效)多多猫 - SiteD插件容器](http://ddcat.noear.org/)  
 [(已失效,要用wayback machine查看)多多猫开发文档](http://sited.noear.org/img/sited_dev_34_66.pdf)  
 [多多猫插件开发指南](http://static.kancloud.cn/magicdmer/ddcat_plugin_develop)
