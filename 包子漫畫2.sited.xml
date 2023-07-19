@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sited ver="1" debug="1" engine="27" schema="1">
+    <meta>
+    <ua></ua>
+    <title>包子漫畫2</title>
+    <intro>包子漫畫2-intro</intro>
+    <author>包子漫畫2-author</author>
+    <url>https://baozimh.org/</url>
+    <expr>baozimh\.org</expr>
+    <encode>utf-8</encode>
+
+    </meta>
+    <main dtype="1" durl="https://baozimh.org/">
+        <home>
+            <hots cache="1d" title="首页" method="get" parse="hots_parse" url="https://baozimh.org/" />
+        </home>
+		<search  cache="1d" method="get" parse="search_parse" url="https://baozimh.org/?s=@key" />
+        <book cache="0" expr="baozimh\.org/\d+" method="get" parse="book_parse" />
+		<section cache="1" method="get" parse="section_parse"/>
+    </main>
+    <script>
+        <require>
+            <item url="http://sited.noear.org/addin/js/cheerio.js" lib="cheerio" />
+        </require>
+        <code>
+            <![CDATA[
+                function search_parse(url, html) {
+					var $ = cheerio.load(html);
+					var list = [];
+					var cs = $('article');
+					var host = 'https://m.mhgui.com';
+
+
+					cs.children().each(function() {
+						
+						const c = $(this);
+						var title = c.find('h2').text();
+						var logo = 'https:'+c.find('img').attr('src');
+						var url = c.find('a').attr('href').replace('manga','chapterlist');
+						
+
+						list.push({
+							name: title,
+							url: url,
+							logo: logo
+						});
+					});
+
+					return JSON.stringify(list);
+				}
+				
+				function book_parse(url, html) 
+				{
+					var $ = cheerio.load(html);
+					var data = {};
+					data.isSectionsAsc = 0;
+					
+					var host = 'https://m.mhgui.com';
+					data.sections = [];
+					$(".version-chaps").children().each(function()
+					{
+						const c = $(this);
+						var text2 = c.find('i').text();
+						var name = c.text();
+						if(text2 != '' && text2 != undefined){
+							name = name.replace(text2,'');
+						}
+						var url = c.attr('href');
+							
+						data.sections.push({
+							name: name,
+							url: url
+						});
+						
+					});
+					return JSON.stringify(data);
+				}
+				function section_parse(url, html) 
+				{
+					var $ = cheerio.load(html,{ decodeEntities: false });
+					var list = [];
+					$("img").each(function()
+					{
+						var url = $(this).attr("src");
+						if(url.split("data:").length < 2 && url.split("http").length > 1){
+							list.push(url);
+						}
+
+						
+					});
+					return JSON.stringify(list);
+				}
+				
+				
+            ]]>
+        </code>
+    </script>
+</sited>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sited ver="1" debug="1" engine="27" schema="1">
+    <meta>
+    <ua></ua>
+    <title>看漫画</title>
+    <intro>看漫画-intro</intro>
+    <author>看漫画-author</author>
+    <url>https://m.mhgui.com/</url>
+    <expr>m\.mhgui\.com</expr>
+    <encode>utf-8</encode>
+
+    </meta>
+    <main dtype="1" durl="https://m.mhgui.com/">
+        <home>
+            <hots cache="1d" title="首页" method="get" parse="hots_parse" url="https://m.mhgui.com/" />
+        </home>
+		<search  cache="1d" method="get" parse="search_parse" url="https://m.mhgui.com/s/@key.html" />
+        <book cache="0" expr="manhuagui\.com/\d+" method="get" parse="book_parse" />
+		<section run="web" cache="1" method="get" parse="section_parse" />
+    </main>
+    <script>
+        <require>
+            <item url="http://sited.noear.org/addin/js/cheerio.js" lib="cheerio" />
+        </require>
+        <code>
+            <![CDATA[
+                function search_parse(url, html) {
+					var $ = cheerio.load(html);
+					var list = [];
+					var cs = $('#detail');
+					var host = 'https://m.mhgui.com';
+
+
+					cs.children().each(function() {
+						
+						const c = $(this);
+						var title = c.find('h3').text();
+						var logo = 'https:'+c.find('img').attr('data-src');
+						var uarr = logo.split("m/");
+						var uarr2 = uarr[uarr.length-1].split(".");
+						var url = host + '/comic/'+uarr2[0]+'/';
+						
+
+						list.push({
+							name: title,
+							url: url,
+							logo: logo
+						});
+					});
+
+					return JSON.stringify(list);
+				}
+				
+				function book_parse(url, html) 
+				{
+					var $ = cheerio.load(html);
+					var data = {};
+					data.isSectionsAsc = 0;
+					
+					var host = 'https://m.mhgui.com';
+					data.sections = [];
+					$("li").each(function()
+					{
+						var c = $(this);
+						var ppid = c.parent().parent().attr('id');
+						if(ppid == 'chapterList'){
+							var name = c.find('b').text();
+							var url = c.find('a').attr('href');
+							if(url == undefined){
+								var geta = $(this).html().split("href=\"");
+								var get2 = geta[geta.length-1].split("\"");
+								url = host + get2[0];
+							}
+							
+							data.sections.push({
+								name: name,
+								url: url
+							});
+						}
+						
+					});
+					return JSON.stringify(data);
+				}
+				
+				
+            ]]>
+        </code>
+    </script>
+</sited>

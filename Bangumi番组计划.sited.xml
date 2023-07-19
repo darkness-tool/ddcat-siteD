@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sited ver="1" debug="1" engine="27" schema="1">
+    <meta>
+    <ua></ua>
+    <title>Bangumi番组计划</title>
+    <intro>Bangumi番组计划-intro</intro>
+    <author>Bangumi番组计划-author</author>
+    <url>https://bangumi.tv/</url>
+    <expr>bangumi\.tv</expr>
+    <encode>utf-8</encode>
+
+    </meta>
+    <main dtype="1" durl="https://bangumi.tv/">
+        <home>
+            <hots cache="1d" title="首页" method="get" url="https://bangumi.tv/" />
+        </home>
+		<search  cache="1d" method="get" parse="search_parse" url="https://bangumi.tv/subject_search/@key?cat=all" />
+        <book run="web" cache="0" expr="bangumi\.tv/\d+" method="get" parse="book_parse" />
+		<section cache="1" method="get" parseUrl="section_parseUrl" parse="section_parse" header="User-Agent=Mozilla/5.0(Android 2.3)"/>
+    </main>
+    <script>
+        <require>
+            <item url="http://sited.noear.org/addin/js/cheerio.js" lib="cheerio" />
+        </require>
+        <code>
+            <![CDATA[
+                function search_parse(url, html) {
+					var $ = cheerio.load(html);
+					var list = [];
+					var cs = $('#browserItemList');
+					var host = 'https://bangumi.tv';
+
+					var i = 0;
+					cs.children().each(function() {
+						if(i <= 2){
+							const c = $(this);
+							const ch = c.find('h3').first();
+							var title = ch.text().replace('\n','').replace(' ','').replace('	','');
+							var logo = 'https:'+c.find('img').attr('src');
+							var url = host+c.find('a').attr('href');
+							
+
+							list.push({
+								name: title,
+								url: url,
+								logo: logo
+							});
+							i++;
+						}
+					});
+
+					return JSON.stringify(list);
+				}
+				
+				function book_parse(url, html) 
+				{
+					var $ = cheerio.load(html);
+					var data = {};
+					data.isSectionsAsc = 0;
+					
+					var host = 'https://m.mhgui.com';
+					data.sections = [];
+					$(".version-chaps").children().each(function()
+					{
+						const c = $(this);
+						var text2 = c.find('i').text();
+						var name = c.text();
+						if(text2 != '' && text2 != undefined){
+							name = name.replace(text2,'');
+						}
+						var url = c.attr('href');
+							
+						data.sections.push({
+							name: name,
+							url: url
+						});
+						
+					});
+					return JSON.stringify(data);
+				}
+				function section_parse(url, html) 
+				{
+					var $ = cheerio.load(html,{ decodeEntities: false });
+					var list = [];
+					$("img").each(function()
+					{
+						var url = $(this).attr("src");
+						if(url.split("data:").length < 2 && url.split("http").length > 1){
+							list.push(url);
+						}
+
+						
+					});
+					return JSON.stringify(list);
+				}
+				
+				
+            ]]>
+        </code>
+    </script>
+</sited>

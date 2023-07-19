@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sited ver="1" debug="1" engine="27" schema="1">
+    <meta>
+    <ua></ua>
+    <title>艾欧漫画</title>
+    <intro>艾欧漫画-intro</intro>
+    <author>艾欧漫画-author</author>
+    <url>https://www.wt0.net/</url>
+    <expr>www\.wt0\.net</expr>
+    <encode>utf-8</encode>
+
+    </meta>
+    <main dtype="1" durl="https://www.wt0.net/">
+        <home>
+            <hots cache="1d" title="首页" method="get" parse="hots_parse" url="https://www.wt0.net/" />
+        </home>
+		<search  cache="1d" method="get" parse="search_parse" url="https://www.wt0.net/vodsearch/-------------.html?wd=@key">
+			<search  cache="1d" method="get" parse="search_parse" url="https://wt0.net/vodsearch/-------------.html?wd=@key"/>
+		</search>
+        <book cache="0" expr="www\.wt0\.net/\d+" method="get" parse="book_parse" />
+		<section cache="1" method="get" parseUrl="section_parseUrl" parse="section_parse" />
+    </main>
+    <script>
+        <require>
+            <item url="http://sited.noear.org/addin/js/cheerio.js" lib="cheerio" />
+        </require>
+        <code>
+            <![CDATA[
+				function hots_parse(url, html) {
+					var $ = cheerio.load(html);
+					var list = [];
+					var cs = $('module-search-item');
+					var host = 'https://www.wt0.net';
+
+
+					cs.each(function() {
+						
+						const c = $(this);
+						var title = c.find('div.comics-card__title').text();
+						var logo = c.find('img').attr('src');
+						var url = c.find('a.fed-list-pics').attr('href');
+						
+
+						list.push({
+							name: title,
+							url: url,
+							logo: logo
+						});
+					});
+
+					return JSON.stringify(list);
+				}
+                function search_parse(url, html) {
+					var $ = cheerio.load(html);
+					var list = [];
+					var cs = $('div.module-search-item');
+					var host = 'https://www.wt0.net';
+
+
+					cs.each(function() {
+						
+						const c = $(this);
+						var title = c.find('h3').text();
+						var logo = c.find('img').attr('data-src');
+						var url = host + c.find('a.video-serial').attr('href');
+						
+
+						list.push({
+							name: title,
+							url: url,
+							logo: logo
+						});
+					});
+
+					return JSON.stringify(list);
+				}
+				
+				function book_parse(url, html) 
+				{
+					var $ = cheerio.load(html);
+					var data = {};
+					data.isSectionsAsc = 0;
+					
+					var host = 'https://www.wt0.net';
+					data.sections = [];
+					$("div.scroll-content").children().each(function()
+					{
+						var a = $(this);
+						var name = a.text();
+						var url = host+a.attr('href');
+						data.sections.push({
+							name: name,
+							url: url
+						});
+						
+					});
+					return JSON.stringify(data);
+				}
+				function section_parseUrl(url, html) {
+					var $ = cheerio.load(html);
+					var sp = $('body').find('script');
+					var spt = sp.text();
+					var sponeline = spt.split(';')[1];
+					var spurl = sponeline.split("\"")[1];
+					return spurl;
+				}
+				
+				function section_parse(url, html) 
+				{
+					var newh = html.slice(6);
+					newh = newh.slice(0, -2);
+					var list = [];
+					var $ = cheerio.load(newh);
+					
+					$("img").each(function()
+					{
+						var url = $(this).attr("src");
+						list.push(url);
+					});
+					return JSON.stringify(list);
+				}
+				
+            ]]>
+        </code>
+    </script>
+</sited>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sited ver="1" debug="1" engine="27" schema="1">
+    <meta>
+    <ua></ua>
+    <title>野蛮漫画</title>
+    <intro>野蛮漫画-intro</intro>
+    <author>野蛮漫画-author</author>
+    <url>https://yemancomic.com/</url>
+    <expr>yemancomic\.com</expr>
+    <encode>utf-8</encode>
+
+    </meta>
+    <main dtype="1" durl="https://yemancomic.com/">
+        <home>
+            <hots cache="1d" title="首页" method="get" url="https://yemancomic.com/" />
+        </home>
+		<search cache="1d" method="post" parse="search_parse" args="key=@key" url="https://yemancomic.com/api/front/index/search" />
+        <book cache="0" expr="yemancomic\.com/\d+" method="get" parse="book_parse" />
+		<section cache="1" method="get" parseUrl="section_parseUrl" parse="section_parse" header="User-Agent=Mozilla/5.0(Android 2.3)"/>
+    </main>
+    <script>
+        <require>
+            <item url="http://sited.noear.org/addin/js/cheerio.js" lib="cheerio" />
+        </require>
+        <code>
+            <![CDATA[
+                function search_parse(url, html) {
+					var strjson = JSON.parse(html);
+					var booklist = strjson.data;
+					var list = [];
+					var host = 'https://yemancomic.com';
+					for(var i = 0;i < booklist.length;i++){
+						
+						var name = booklist[i].bname;
+						if(name == undefined || name == '' || name == '---'){
+							name = booklist[i].name;
+						}
+					
+						list.push({
+							name: name,
+							url: host+booklist[i].info_url,
+							logo: booklist[i].bcover,
+							newSection: booklist[i].lastchapter,
+							status:booklist[i].isfull
+						});
+					}
+					
+					return JSON.stringify(list);
+				}
+				
+				function book_parse(url, html) 
+				{
+					var $ = cheerio.load(html);
+					var data = {};
+					data.isSectionsAsc = 0;
+					var com = $('#COMMENT');
+					var host = 'https://yemancomic.com/chapter/'+com.attr('data-ssid');
+					data.sections = [];
+					var info = $('span.desc-content');
+					if(info != undefined){
+						data.intro = info.first().text();
+					}
+					
+					$("li.item").each(function()
+					{
+						var c = $(this);
+						var ah = c.find('a');
+						var cpid = c.attr('data-chapter');
+						if(cpid != undefined){
+							var url = '/'+cpid+'.html';
+							data.sections.push({
+								name: c.text(),
+								url: host+url
+							});
+						}
+						
+
+					});
+					data.sections.reverse();
+					return JSON.stringify(data);
+				}
+				function section_parseUrl(url, html) {
+					var data = '';
+					var $ = cheerio.load(html,{ decodeEntities: false });
+					var nextEps = $("a.btn");
+					if(nextEps != undefined){
+						var nextEps1 = nextEps.first();
+						var nextEps3 = nextEps1.attr('href');
+						if(nextEps3 == undefined){
+							return "";
+						}
+						if(nextEps3.slice(-7)[0] == '_'){
+							return "CALL::https://yemancomic.com"+nextEps3;
+						}
+						if(url.slice(-7)[0] == '_'){
+							var max = parseInt(url.slice(-6)[0]);
+							for(var i = 2;i < max;i++){
+								data +=";"+url.replace(url.slice(-7),'_'+i+'.html');
+							};
+							data += ";"+url;
+							data = url.replace(url.slice(-7),'.html')+ data;
+							print("data url= "+data);
+							return data;
+						}else{
+							return url;
+						}
+						
+					}else{
+						data = url;
+						data +=";"+url.replace('.html','_2.html');
+						data +=";"+url.replace('.html','_3.html');
+						data +=";"+url.replace('.html','_4.html');
+						return data;
+					}
+					
+					
+				}
+				
+				function section_parse(url, html) 
+				{
+					var $ = cheerio.load(html,{ decodeEntities: false });
+					var list = [];
+					$("img.calwh").each(function()
+					{
+						var url = $(this).attr("data-src");
+						var url2 = encodeURI(url);
+						if(list.indexOf(url2)== -1){
+							list.push(url2);
+						}
+						
+					});
+					return JSON.stringify(list);
+				}
+				
+				
+            ]]>
+        </code>
+    </script>
+</sited>

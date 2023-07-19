@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sited ver="1" debug="1" engine="27" schema="1">
+    <meta>
+    <ua></ua>
+    <title>包子漫畫</title>
+    <intro>包子漫畫-intro</intro>
+    <author>包子漫畫-author</author>
+    <url>https://www.baozimh.com/</url>
+    <expr>\.baozimh\.com</expr>
+    <encode>utf-8</encode>
+
+    </meta>
+    <main dtype="1" durl="https://www.baozimh.com/">
+        <home>
+            <hots cache="1d" title="首页" method="get" parse="hot_parse" url="https://www.baozimh.com/" />
+            <tags title="标签">
+                <item title="分類" url="https://www.baozimh.com/classify" />
+            </tags>
+        </home>
+		<search  cache="1d" method="get" parse="search_parse" url="https://www.baozimh.com/search?q=@key" />
+        <book cache="0" expr="baozimh\.com/\d+" method="get" parse="book_parse" />
+		<section cache="1" method="get" parse="section_parse" />
+    </main>
+    <script>
+        <require>
+            <item url="http://sited.noear.org/addin/js/cheerio.js" lib="cheerio" />
+        </require>
+        <code>
+            <![CDATA[
+				function hot_parse(url, html) {
+					var $ = cheerio.load(html);
+					var list = [];
+					var cs = $('div.comics-card');
+					var host = 'https://www.baozimh.com';
+
+					cs.each(function() {
+						
+						const c = $(this);
+						var title = c.find('div.comics-card__title').text();
+						var logo = c.find('amp-img').attr('src');
+						var uarr = logo.split("cover/");
+						var uarr2 = uarr[uarr.length-1].split(".");
+						var url = host + '/comic/'+uarr2[0];
+						var author = c.find('small').text();
+						
+
+						list.push({
+							name: title,
+							url: url,
+							author: author,
+							logo: logo
+						});
+					});
+
+					return JSON.stringify(list);
+				}
+                function search_parse(url, html) {
+					var $ = cheerio.load(html);
+					var list = [];
+					var cs = $('div.comics-card');
+					var host = 'https://www.baozimh.com';
+
+					var i = 0;
+					cs.each(function() {
+						
+						
+						if(i <= 10){
+							const c = $(this);
+							var title = c.find('div.comics-card__title').text();
+							var logo = c.find('amp-img').attr('src');
+							var uarr = logo.split("cover/");
+							var uarr2 = uarr[uarr.length-1].split(".");
+							var url = host + '/comic/'+uarr2[0];
+							var author = c.find('small').text();
+							
+
+							list.push({
+								name: title,
+								url: url,
+								author: author,
+								logo: logo
+							});
+							i++;
+						}
+					});
+
+					return JSON.stringify(list);
+				}
+				
+				function book_parse(url, html) 
+				{
+					var $ = cheerio.load(html);
+					var data = {};
+					data.name = $("h1.comics-detail__title").text();
+					data.author = $("h2.comics-detail__author").text();
+					data.logo = $("img").attr("src");
+					data.updateTime = $("em").text();
+					data.intro = $("p.comics-detail__desc").text();
+					data.isSectionsAsc = 0;
+					
+					data.sections = [];
+					$("a.comics-chapters__item").each(function()
+					{
+						var a=$(this);
+						var ppid = a.parent().parent().attr('id');
+						if(ppid != undefined){
+							var name = a.find('span').text();
+							var h = a.attr('href');
+							var comicid = h.split('comic_id=');
+							var comicid2 = comicid[comicid .length-1].split('&');
+							var sectionid = h.split('section_slot=');
+							var sectionid2 = sectionid[sectionid.length-1].split('&');
+							var slot = h.split('chapter_slot=');
+							var slot2 = slot[slot.length-1].split('&');
+							var url = "https://www.webmota.com/comic/chapter/"+comicid2[0]+"/"+sectionid2[0]+"_"+slot2[0]+".html";
+
+							data.sections.push({
+								name: name ,
+								url: url
+							});
+							
+						}
+						
+					});
+					data.sections.reverse();
+					return JSON.stringify(data);
+				}
+				
+				function section_parse(url, html) 
+				{
+					var $ = cheerio.load(html);
+					var list = [];
+					$("img.comic-contain__item").each(function()
+					{
+						var url = $(this).attr("data-src");
+						list.push(url);
+					});
+					return JSON.stringify(list);
+				}
+				
+            ]]>
+        </code>
+    </script>
+</sited>
