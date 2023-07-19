@@ -135,8 +135,12 @@
 						if(nextEps != undefined){
 							var nextEps1 = nextEps.first();
 							var nextEps3 = nextEps1.attr('href');
-							if(nextEps3 != undefined && (nextEps3.slice(-7)[0] == '_' && nextEps3.split('_').length >= 3)){
-								return "CALL::"+nextEps3;
+							if(nextEps3 != undefined){
+								var nextEps4 = nextEps3.split('/');
+								if(nextEps3.slice(-7)[0] == '_' && nextEps4[nextEps4.length-1].split('_').length >= 3){
+									return "CALL::"+nextEps3;
+								}
+								
 							}
 						}
 						if(url.slice(-7)[0] == '_'){
