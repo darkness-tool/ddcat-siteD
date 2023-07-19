@@ -133,8 +133,21 @@
 					$("img.comic-contain__item").each(function()
 					{
 						var url = $(this).attr("data-src");
+						if(url == "" || url == undefined){
+							url = $(this).attr("src");
+						}
 						list.push(url);
 					});
+					if(list.length == 0){
+						$("amp-img.comic-contain__item").each(function()
+						{
+							var url = $(this).attr("data-src");
+							if(url == "" || url == undefined){
+								url = $(this).attr("src");
+							}
+							list.push(url);
+						});
+					}
 					return JSON.stringify(list);
 				}
 				
