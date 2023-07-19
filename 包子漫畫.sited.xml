@@ -19,7 +19,7 @@
         </home>
 		<search  cache="1d" method="get" parse="search_parse" url="https://www.baozimh.com/search?q=@key" />
         <book cache="0" expr="baozimh\.com/\d+" method="get" parse="book_parse" />
-		<section cache="1" method="get" parse="section_parse" />
+		<section cache="1" method="get" parseUrl="section_parseUrl" parse="section_parse" />
     </main>
     <script>
         <require>
@@ -124,6 +124,43 @@
 					});
 					data.sections.reverse();
 					return JSON.stringify(data);
+				}
+				
+				function section_parseUrl(url, html) {
+					var data = '';
+					var $ = cheerio.load(html,{ decodeEntities: false });
+					var nextEps = $("#next-chapter").first();
+					var nextEpsEnd = $("#is_last_chapter_a").first();
+					if(nextEps != undefined || nextEpsEnd != undefined){
+						if(nextEps != undefined){
+							var nextEps1 = nextEps.first();
+							var nextEps3 = nextEps1.attr('href');
+							if(nextEps3 != undefined && (nextEps3.slice(-7)[0] == '_' && nextEps3.split('_').length >= 3)){
+								return "CALL::"+nextEps3;
+							}
+						}
+						if(url.slice(-7)[0] == '_'){
+							var max = parseInt(url.slice(-6)[0]);
+							for(var i = 2;i < max;i++){
+								data +=";"+url.replace(url.slice(-7),'_'+i+'.html');
+							};
+							data += ";"+url;
+							data = url.replace(url.slice(-7),'.html')+ data;
+							print("all manga urls= "+data);
+							return data;
+						}else{
+							return url;
+						}
+						
+					}else{
+						data = url;
+						data +=";"+url.replace('.html','_2.html');
+						data +=";"+url.replace('.html','_3.html');
+						data +=";"+url.replace('.html','_4.html');
+						return data;
+					}
+					
+					
 				}
 				
 				function section_parse(url, html) 
