@@ -14,9 +14,9 @@
         <home>
             <hots cache="1d" title="首页" method="get" parse="hots_parse" url="https://m.mhgui.com/" />
         </home>
-		<search  cache="1d" method="get" parse="search_parse" url="https://m.mhgui.com/s/@key.html" />
-        <book cache="0" expr="manhuagui\.com/\d+" method="get" parse="book_parse" />
-		<section run="web" cache="1" method="get" parse="section_parse" />
+		<search  cache="1d" method="get" parse="search_parse" url="https://m.mhgui.com/s/@key.html"  header="User-Agent=Mozilla/5.0(Android 2.3)"/>
+        <book cache="0" expr="m\.mhgui\.com/\d+" method="get" parse="book_parse"  header="User-Agent=Mozilla/5.0(Android 2.3)" />
+		<section run="web" cache="1" method="get" parse="section_parse"   header="User-Agent=Mozilla/5.0(Android 2.3)"/>
     </main>
     <script>
         <require>
@@ -80,6 +80,40 @@
 						
 					});
 					return JSON.stringify(data);
+				}
+				
+				function section_parseUrl(url, html) {
+					var data = '';
+					var $ = cheerio.load(html,{ decodeEntities: false });
+					var nextEps = $("span.manga-page");
+					if(nextEps != undefined){
+						var nextEps1 = nextEps.text();
+						var max = nextEps1.split("/")[1].split("P")[0];
+						
+						data = url;
+						for(var i = 1;i <= max;i++){
+							data += ";"+url+"#p="+i;
+						};
+						
+						print("data url= "+data);
+						return data;
+						
+					}else{
+						data = url;
+						for(var i = 1;i <= 20;i++){
+							data += ";"+url+"#p="+i;
+						};
+						return data;
+					}
+					
+					
+				}
+				
+				function section_parse(url, html) 
+				{
+					var $ = cheerio.load(html,{ decodeEntities: false });
+					var list = [];
+					return JSON.stringify(list);
 				}
 				
 				
