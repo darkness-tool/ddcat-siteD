@@ -6,7 +6,7 @@
     <intro>包子漫畫-intro</intro>
     <author>包子漫畫-author</author>
     <url>https://www.baozimh.com/</url>
-    <expr>www\.baozimh\.com|www\.webmota\.com|www\.dzmanga\.com</expr>
+    <expr>www\.baozimh\.com|www\.webmota\.com|www\.dzmanga\.com|www\.twmanga\.com</expr>
     <encode>utf-8</encode>
 
     </meta>
