@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <sited ver="1" debug="1" engine="27" schema="1">
     <meta>
-    <ua></ua>
-    <title>野蛮漫画</title>
-    <intro>野蛮漫画-intro</intro>
-    <author>野蛮漫画-author</author>
-    <url>https://yemancomic.com/</url>
-    <expr>yemancomic\.com</expr>
-    <encode>utf-8</encode>
-
+		<ua></ua>
+		<title>野蛮漫画</title>
+		<intro>野蛮漫画-intro</intro>
+		<author>野蛮漫画-author</author>
+		<url>https://yemancomic.com/</url>
+		<expr>yemancomic\.com</expr>
+		<encode>utf-8</encode>
     </meta>
     <main dtype="1" durl="https://yemancomic.com/">
         <home>
             <hots cache="1d" title="首页" method="get" url="https://yemancomic.com/" />
         </home>
 		<search cache="1d" method="post" parse="search_parse" args="key=@key" url="https://yemancomic.com/api/front/index/search" />
-        <book cache="0" expr="yemancomic\.com/\d+" method="get" parse="book_parse" />
-		<section run="web" cache="1" method="get" parseUrl="section_parseUrl" parse="section_parse" header="User-Agent=Mozilla/5.0(Android 2.3)"/>
+        <book cache="0" expr="yemancomic\.com/\d+" method="get" parse="book_parse" header="User-Agent=Mozilla/5.0(Android 2.3);Referer=www.yemancomic.com"/>
+		<section run="web" cache="1" method="get" parse="section_parse" header="User-Agent=Mozilla/5.0(Android 2.3);Referer=www.yemancomic.com"/>
     </main>
     <script>
         <require>
@@ -32,8 +31,13 @@
 					for(var i = 0;i < booklist.length;i++){
 						
 						var name = booklist[i].bname;
+						var name2 = booklist[i].name;
 						if(name == undefined || name == '' || name == '---'){
-							name = booklist[i].name;
+							name = name2;
+						}else if(name2 != undefined || name2 != ''){
+							if(name != name2.split("~")[0] ){
+								name += "," +name2;
+							}
 						}
 					
 						list.push({
@@ -61,12 +65,14 @@
 						data.intro = info.first().text();
 					}
 					
-					$("li.item").each(function()
+					$("li.comic-chapter-item").each(function()
 					{
+					
 						var c = $(this);
 						var ah = c.find('a');
 						var cpid = c.attr('data-chapter');
 						if(cpid != undefined){
+							
 							var url = '/'+cpid+'.html';
 							data.sections.push({
 								name: c.text(),
@@ -76,6 +82,21 @@
 						
 
 					});
+					host = 'https://yemancomic.com';
+					if(data.sections.length == 0){
+						$("a.comic-chapter-link").each(function()
+						{
+						
+							var c = $(this);
+							var h = c.attr("href");
+							data.sections.push({
+								name: c.text().trim(),
+								url: host+h
+							});
+						});
+					
+					}
+					
 					data.sections.reverse();
 					return JSON.stringify(data);
 				}
