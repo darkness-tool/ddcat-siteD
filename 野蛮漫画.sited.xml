@@ -16,7 +16,7 @@
         </home>
 		<search cache="1d" method="post" parse="search_parse" args="key=@key" url="https://yemancomic.com/api/front/index/search" />
         <book cache="0" expr="yemancomic\.com/\d+" method="get" parse="book_parse" />
-		<section cache="1" method="get" parseUrl="section_parseUrl" parse="section_parse" header="User-Agent=Mozilla/5.0(Android 2.3)"/>
+		<section run="web" cache="1" method="get" parseUrl="section_parseUrl" parse="section_parse" header="User-Agent=Mozilla/5.0(Android 2.3)"/>
     </main>
     <script>
         <require>
